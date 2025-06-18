@@ -2,6 +2,7 @@ import { Tabs } from "expo-router";
 import { Ionicons } from '@expo/vector-icons';
 import { Platform, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function TabLayout() {
   // Adjust for Android's system navigation bar
@@ -9,7 +10,7 @@ export default function TabLayout() {
   const tabBarPadding = Platform.OS === 'android' ? 10 : 0;
 
   return (
-    <>
+    <SafeAreaView style={{ flex: 1 }}>
       <Tabs screenOptions={{
         tabBarShowLabel: false,
         headerShown: false,
@@ -42,6 +43,7 @@ export default function TabLayout() {
                   size={28} 
                   color={color} 
                 />
+                <StatusBar style="dark" />
               </View>
             ),
           }}
@@ -58,6 +60,7 @@ export default function TabLayout() {
                   size={26} 
                   color={color} 
                 />
+                <StatusBar style="dark" />
               </View>
             ),
           }}
@@ -74,6 +77,7 @@ export default function TabLayout() {
                   size={26} 
                   color={color} 
                 />
+                <StatusBar style="dark" />
               </View>
             ),
           }}
@@ -90,13 +94,14 @@ export default function TabLayout() {
                   size={26} 
                   color={color} 
                 />
+                <StatusBar style="dark" />
               </View>
             ),
           }}
         />
       </Tabs>
       <StatusBar style="dark" />
-    </>
+    </SafeAreaView>
   );
 }
 
