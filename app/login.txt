@@ -1,0 +1,480 @@
+import React, { useState } from 'react';
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
+
+interface Errors {
+  email?: string;
+  password?: string;
+  name?: string;
+  phone?: string;
+  dateOfBirth?: string;
+}
+
+export default function LoginPage() {
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [gender, setGender] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [errors, setErrors] = useState<Errors>({});
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhone = (phone: string) => {
+    const phoneRegex = /^\d{10}$/;
+    return phoneRegex.test(phone.replace(/\D/g, ''));
+  };
+
+  const validateDate = (date: string) => {
+    const dateRegex = /^\d{2}\/\d{2}\/\d{4}$/;
+    return dateRegex.test(date);
+  };
+
+  const handleLogin = async () => {
+    const newErrors: Errors = {};
+    
+    if (!email || !validateEmail(email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+    if (!password || password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      // Simulate login
+      Alert.alert('Success', 'Login successful!');
+      console.log('Login attempt:', { email, password });
+    }
+  };
+
+  const handleSignUp = async () => {
+    const newErrors: Errors = {};
+    
+    if (!name || name.trim().length < 2) {
+      newErrors.name = 'Please enter your full name';
+    }
+    if (!email || !validateEmail(email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+    if (!password || password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+    if (!phone || !validatePhone(phone)) {
+      newErrors.phone = 'Please enter a valid 10-digit phone number';
+    }
+    if (!dateOfBirth || !validateDate(dateOfBirth)) {
+      newErrors.dateOfBirth = 'Please enter date in MM/DD/YYYY format';
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      // Simulate sign up
+      Alert.alert('Success', 'Account created successfully!');
+      console.log('Sign up attempt:', { name, email, phone, gender, dateOfBirth });
+    }
+  };
+
+  const handleGoogleSignIn = () => {
+    // Simulate Google sign in
+    Alert.alert('Google Sign In', 'Google authentication would be handled here');
+    console.log('Google sign in attempted');
+  };
+
+  const renderInputField = (
+    label: string,
+    value: string,
+    onChangeText: (text: string) => void,
+    placeholder: string,
+    error?: string,
+    icon?: string,
+    secureTextEntry?: boolean,
+    keyboardType?: 'default' | 'email-address' | 'numeric' | 'phone-pad'
+  ) => (
+    <View style={styles.inputContainer}>
+      <Text style={styles.label}>{label}</Text>
+      <View style={[styles.inputWrapper, error && styles.inputError]}>
+        {icon && (
+          <View style={styles.iconContainer}>
+            <Text style={styles.icon}>{icon}</Text>
+          </View>
+        )}
+        <TextInput
+          style={[styles.input, icon && styles.inputWithIcon]}
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          keyboardType={keyboardType || 'default'}
+          secureTextEntry={secureTextEntry}
+          placeholderTextColor="#9CA3AF"
+          autoCapitalize={secureTextEntry ? 'none' : 'words'}
+        />
+      </View>
+      {error && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>⚠️ {error}</Text>
+        </View>
+      )}
+    </View>
+  );
+
+  const renderGenderSelector = () => (
+    <View style={styles.inputContainer}>
+      <Text style={styles.label}>Gender</Text>
+      <View style={styles.genderContainer}>
+        {['Male', 'Female', 'Other'].map((option) => (
+          <TouchableOpacity
+            key={option}
+            style={[
+              styles.genderOption,
+              gender === option && styles.genderOptionSelected
+            ]}
+            onPress={() => setGender(option)}
+          >
+            <Text style={[
+              styles.genderText,
+              gender === option && styles.genderTextSelected
+            ]}>
+              {option}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
+
+  return (
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      <View style={styles.wrapper}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.headerIcon}>
+            <Text style={styles.headerIconText}>🏥</Text>
+          </View>
+          <Text style={styles.title}>
+            {isSignUp ? 'Create Account' : 'Welcome Back'}
+          </Text>
+          <Text style={styles.subtitle}>
+            {isSignUp ? 'Join us to track your health' : 'Sign in to your health dashboard'}
+          </Text>
+        </View>
+
+        {/* Form Card */}
+        <View style={styles.card}>
+          {isSignUp ? (
+            // Sign Up Form
+            <>
+              {renderInputField('Full Name', name, setName, 'Ramesh nath', errors.name, '👤')}
+              {renderInputField('Email', email, setEmail, 'ramesh@example.com', errors.email, '📧', false, 'email-address')}
+              {renderInputField('Phone Number', phone, setPhone, '+91 9876543210', errors.phone, '📱', false, 'phone-pad')}
+              {renderGenderSelector()}
+              {renderInputField('Date of Birth', dateOfBirth, setDateOfBirth, 'MM/DD/YYYY', errors.dateOfBirth, '📅')}
+              {renderInputField('Password', password, setPassword, 'Create a strong password', errors.password, '🔒', true)}
+
+              <TouchableOpacity style={styles.submitButton} onPress={handleSignUp}>
+                <Text style={styles.submitButtonText}>Create Account</Text>
+              </TouchableOpacity>
+
+              <View style={styles.divider}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>or</Text>
+                <View style={styles.dividerLine} />
+              </View>
+
+              <TouchableOpacity style={styles.googleButton} onPress={handleGoogleSignIn}>
+                <Text style={styles.googleIcon}>🌐</Text>
+                <Text style={styles.googleButtonText}>Sign up with Google</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.switchButton} 
+                onPress={() => setIsSignUp(false)}
+              >
+                <Text style={styles.switchButtonText}>
+                  Already have an account? <Text style={styles.switchButtonLink}>Sign In</Text>
+                </Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            // Login Form
+            <>
+              {renderInputField('Email or Username', email, setEmail, 'Enter your email', errors.email, '👤', false, 'email-address')}
+              {renderInputField('Password', password, setPassword, 'Enter your password', errors.password, '🔒', true)}
+
+              <TouchableOpacity style={styles.forgotPassword}>
+                <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.submitButton} onPress={handleLogin}>
+                <Text style={styles.submitButtonText}>Sign In</Text>
+              </TouchableOpacity>
+
+              <View style={styles.divider}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>or</Text>
+                <View style={styles.dividerLine} />
+              </View>
+
+              <TouchableOpacity style={styles.googleButton} onPress={handleGoogleSignIn}>
+                <Text style={styles.googleIcon}>🌐</Text>
+                <Text style={styles.googleButtonText}>Continue with Google</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.switchButton} 
+                onPress={() => setIsSignUp(true)}
+              >
+                <Text style={styles.switchButtonText}>
+                  Don't have an account? <Text style={styles.switchButtonLink}>Sign Up</Text>
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
+
+          {/* Info Footer */}
+          <View style={styles.infoFooter}>
+            <Text style={styles.infoText}>
+              🔐 Your health data is secure and private
+            </Text>
+          </View>
+        </View>
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F0F9FF',
+  },
+  contentContainer: {
+    flexGrow: 1,
+  },
+  wrapper: {
+    maxWidth: 400,
+    alignSelf: 'center',
+    width: '100%',
+    paddingHorizontal: 16,
+    paddingTop: 32,
+    paddingBottom: 32,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  headerIcon: {
+    width: 64,
+    height: 64,
+    backgroundColor: '#3B82F6',
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  headerIconText: {
+    fontSize: 32,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1F2937',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#6B7280',
+    textAlign: 'center',
+  },
+  card: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 24,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#374151',
+    marginBottom: 8,
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    backgroundColor: 'white',
+    minHeight: 56,
+  },
+  inputError: {
+    borderColor: '#EF4444',
+    backgroundColor: '#FEF2F2',
+  },
+  iconContainer: {
+    paddingLeft: 12,
+    paddingRight: 8,
+  },
+  icon: {
+    fontSize: 20,
+  },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    color: '#1F2937',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+  },
+  inputWithIcon: {
+    paddingLeft: 0,
+  },
+  errorContainer: {
+    marginTop: 8,
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#EF4444',
+  },
+  genderContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  genderOption: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  genderOptionSelected: {
+    borderColor: '#3B82F6',
+    backgroundColor: '#EFF6FF',
+  },
+  genderText: {
+    fontSize: 14,
+    color: '#6B7280',
+    fontWeight: '500',
+  },
+  genderTextSelected: {
+    color: '#3B82F6',
+    fontWeight: '600',
+  },
+  forgotPassword: {
+    alignItems: 'flex-end',
+    marginBottom: 24,
+  },
+  forgotPasswordText: {
+    fontSize: 14,
+    color: '#3B82F6',
+    fontWeight: '500',
+  },
+  submitButton: {
+    backgroundColor: '#3B82F6',
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginBottom: 24,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  submitButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E5E7EB',
+  },
+  dividerText: {
+    paddingHorizontal: 16,
+    fontSize: 14,
+    color: '#9CA3AF',
+  },
+  googleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    marginBottom: 24,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  googleIcon: {
+    fontSize: 20,
+    marginRight: 12,
+  },
+  googleButtonText: {
+    fontSize: 16,
+    color: '#374151',
+    fontWeight: '500',
+  },
+  switchButton: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  switchButtonText: {
+    fontSize: 14,
+    color: '#6B7280',
+  },
+  switchButtonLink: {
+    color: '#3B82F6',
+    fontWeight: '600',
+  },
+  infoFooter: {
+    backgroundColor: '#EFF6FF',
+    borderRadius: 12,
+    padding: 16,
+  },
+  infoText: {
+    fontSize: 12,
+    color: '#2563EB',
+    textAlign: 'center',
+  },
+});
