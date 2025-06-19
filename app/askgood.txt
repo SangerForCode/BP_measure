@@ -14,7 +14,6 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons';
-import Markdown from 'react-native-markdown-display';
 
 // Type definitions for health data
 interface VitalSigns {
@@ -71,16 +70,9 @@ const MedicalAIChatbot = () => {
   const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyApeS7EsK4LzpkYYCxz_1Za-pOD5qWJcCk';
   const FIREBASE_API_URL = 'https://health-app-asr-default-rtdb.firebaseio.com/tryout.json';
 
-  // Remove or comment out the scrollToBottom effect and function
-  // useEffect(() => {
-  //   scrollToBottom();
-  // }, [messages]);
-
-  // const scrollToBottom = () => {
-  //   setTimeout(() => {
-  //     scrollViewRef.current?.scrollToEnd({ animated: true });
-  //   }, 100);
-  // };
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   // Utility functions for status
   const getBPStatus = (systolic: number, diastolic: number) => {
@@ -323,6 +315,12 @@ const MedicalAIChatbot = () => {
            arrayToCSV(pulseRateCSV, 'Pulse Rate Data');
   };
 
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 100);
+  };
+
   const sendMessage = async () => {
     if (!inputText.trim()) return;
     
@@ -424,55 +422,44 @@ const MedicalAIChatbot = () => {
     );
   };
 
-  // Add markdownStyles for Markdown component
-  const markdownStyles = StyleSheet.create({
-    strong: {
-      fontWeight: 'bold',
-      color: '#000',
-    },
-    list_item: {
-      marginVertical: 2,
-      lineHeight: 20,
-    },
-    bullet_list: {
-      marginBottom: 5,
-    },
-    text: {
-      fontSize: 16,
-      lineHeight: 24,
-    },
-    heading1: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      marginVertical: 10,
-      color: '#333',
-    },
-    heading2: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      marginVertical: 8,
-      color: '#333',
-    },
-    heading3: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      marginVertical: 6,
-      color: '#444',
-    },
-    code_inline: {
-      backgroundColor: '#f0f0f0',
-      fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-      padding: 2,
-      borderRadius: 3,
-    },
-    code_block: {
-      backgroundColor: '#f0f0f0',
-      fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-      padding: 10,
-      borderRadius: 5,
-      marginVertical: 8,
-    },
-  });
+  // JSX-based markdown formatter for bot responses
+  const formatBotResponse = (text: string) => {
+    const parts = [];
+    let remainingText = text;
+    while (remainingText) {
+      // Bold (**text**)
+      const boldMatch = remainingText.match(/\*\*(.*?)\*\*/);
+      if (boldMatch) {
+        const before = remainingText.substring(0, boldMatch.index);
+        if (before) parts.push(before);
+        parts.push(<Text key={parts.length} style={{fontWeight: 'bold'}}>{boldMatch[1]}</Text>);
+        remainingText = remainingText.substring(boldMatch.index! + boldMatch[0].length);
+        continue;
+      }
+      // Italic (*text*)
+      const italicMatch = remainingText.match(/\*(.*?)\*/);
+      if (italicMatch) {
+        const before = remainingText.substring(0, italicMatch.index);
+        if (before) parts.push(before);
+        parts.push(<Text key={parts.length} style={{fontStyle: 'italic'}}>{italicMatch[1]}</Text>);
+        remainingText = remainingText.substring(italicMatch.index! + italicMatch[0].length);
+        continue;
+      }
+      // List (- item or * item)
+      const listMatch = remainingText.match(/^\s*[-*]\s(.*)$/m);
+      if (listMatch) {
+        const before = remainingText.substring(0, listMatch.index);
+        if (before) parts.push(before);
+        parts.push(<Text key={parts.length} style={{marginLeft: 10}}>• {listMatch[1]}{"\n"}</Text>);
+        remainingText = remainingText.substring(listMatch.index! + listMatch[0].length);
+        continue;
+      }
+      // No more formatting
+      parts.push(remainingText);
+      remainingText = '';
+    }
+    return parts;
+  };
 
   const renderMessage = (message: any) => (
     <View key={message.id} style={[
@@ -489,15 +476,12 @@ const MedicalAIChatbot = () => {
             <Text style={styles.doctorLabel}> Dr. AI</Text>
           </View>
         )}
-        <Markdown
-          style={
-            message.isBot
-              ? markdownStyles
-              : { ...markdownStyles, text: { ...markdownStyles.text, color: '#fff' }, strong: { ...markdownStyles.strong, color: '#fff' } }
-          }
-        >
-          {message.text}
-        </Markdown>
+        <Text style={[
+          styles.messageText,
+          message.isBot ? styles.botText : styles.userText
+        ]}>
+          {formatBotResponse(message.text)}
+        </Text>
         <Text style={[
           styles.timestamp,
           message.isBot ? styles.botTimestamp : styles.userTimestamp
@@ -717,8 +701,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   listItem: {
-    marginLeft: 20,
-    marginVertical: 4,
+    marginLeft: 10,
   },
   timestamp: {
     fontSize: 11,
@@ -875,36 +858,6 @@ const styles = StyleSheet.create({
   checkboxLabel: {
     fontSize: 14,
     color: '#333',
-  },
-  headingText: {
-    marginVertical: 8,
-  },
-  heading1: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  heading2: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  heading3: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#444',
-  },
-  heading4: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#555',
-  },
-  codeBlock: {
-    backgroundColor: '#f0f0f0',
-    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
-    padding: 10,
-    borderRadius: 5,
-    marginVertical: 8,
   },
 });
 

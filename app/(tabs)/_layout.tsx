@@ -5,6 +5,8 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function TabLayout() {
+  console.log('TabLayout rendered');
+
   // Adjust for Android's system navigation bar
   const tabBarHeight = Platform.OS === 'android' ? 70 : 60;
   const tabBarPadding = Platform.OS === 'android' ? 10 : 0;

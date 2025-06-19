@@ -31,6 +31,7 @@ export default function VitalSignsForm() {
   const [systolic, setSystolic] = useState('');
   const [diastolic, setDiastolic] = useState('');
   const [pulse, setPulse] = useState('');
+  const [notes, setNotes] = useState('');
   const [errors, setErrors] = useState<Errors>({});
   const [tookMedicine, setTookMedicine] = useState(false);
   const [hadSymptoms, setHadSymptoms] = useState(false);
@@ -73,7 +74,7 @@ export default function VitalSignsForm() {
         had_symptoms: hadSymptoms,
         exercised_today: exercised,
         high_stress_level: stressLevel,
-        notes: ''
+        notes: notes.trim()
       };
 
       try {
@@ -85,6 +86,7 @@ export default function VitalSignsForm() {
         setSystolic('');
         setDiastolic('');
         setPulse('');
+        setNotes('');
         setTookMedicine(false);
         setHadSymptoms(false);
         setExercised(false);
@@ -232,6 +234,23 @@ export default function VitalSignsForm() {
             {renderCheckbox('Are you feeling stressed?', stressLevel, setStressLevel, '😰')}
           </View>
 
+          {/* Notes Section */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Additional Notes <Text style={styles.optionalText}>(Optional)</Text></Text>
+            <View style={styles.inputWrapper}>
+              <View style={styles.iconContainer}>
+                <Text style={styles.icon}>💭</Text>
+              </View>
+              <TextInput
+                style={[styles.input, styles.inputWithIcon]}
+                value={notes}
+                onChangeText={setNotes}
+                placeholder="Any additional notes..."
+                placeholderTextColor="#9CA3AF"
+              />
+            </View>
+          </View>
+
           {/* Spacer */}
           <View style={styles.spacer} />
 
@@ -326,6 +345,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#1F2937',
   },
+  optionalText: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    fontStyle: 'italic',
+    fontWeight: 'normal',
+  },
   row: {
     flexDirection: 'row',
     gap: 16,
@@ -401,6 +426,24 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#EF4444',
     marginTop: 4,
+  },
+  notesInputWrapper: {
+    flexDirection: 'row',
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    backgroundColor: 'white',
+    minHeight: 100,
+    alignItems: 'flex-start',
+  },
+  notesInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#1F2937',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    paddingLeft: 0,
+    minHeight: 100,
   },
   spacer: {
     height: 32,
