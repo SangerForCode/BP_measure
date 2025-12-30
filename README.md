@@ -1,53 +1,99 @@
-# Welcome to your Expo app 👋
+# Blood Pressure Monitoring App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Project Aim
+This project is a mobile application designed to help users log, track, and visualize their blood pressure readings. It aims to provide an easy-to-use interface for monitoring cardiovascular health, viewing historical trends, and potentially sharing data with family or healthcare providers.
 
-## Get started
+## Technical Implementation
+Built with React Native and the Expo framework, this application is written in TypeScript for robust, type-safe code. It features a tab-based navigation system managed by Expo Router. For data visualization, it integrates charting libraries like `react-native-chart-kit` to render historical data into intuitive graphs. The presence of Firebase database export files suggests that it uses Firebase Realtime Database for data storage and synchronization.
 
-1. Install dependencies
+## Key Features
+- **Data Logging:** Allows users to record their systolic and diastolic blood pressure measurements.
+- **Historical Graphing:** Visualizes blood pressure trends over time using interactive charts.
+- **AI Assistant:** Includes a feature to "Ask AI," suggesting an integrated assistant for health-related queries.
+- **Data Sharing:** A "Family Code" feature implies functionality for sharing health data securely with others.
 
-   ```bash
-   npm install
-   ```
+## Setup Instructions
 
-2. Start the app
+- **Install dependencies:** `npm install`
 
-   ```bash
-   npx expo start
-   ```
+- **Run the app:** `npx expo start`
 
-In the output, you'll find options to open the app in a
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## System Diagram
 
-## Get a fresh project
+```mermaid
 
-When you're ready, run:
+graph TD
 
-```bash
-npm run reset-project
+    subgraph "User"
+
+        A[Mobile User]
+
+    end
+
+
+
+    subgraph "React Native App (Expo)"
+
+        B(Expo Router)
+
+        C(Tab Navigator)
+
+        
+
+        subgraph "Screens"
+
+            D[Record Data]
+
+            E[View Graph]
+
+            F[Family Code]
+
+            G[Ask AI]
+
+        end
+
+        
+
+        H[Chart Kit]
+
+    end
+
+
+
+    subgraph "Backend"
+
+        I[(Firebase RTDB)]
+
+        J[(AI Service)]
+
+    end
+
+
+
+    A --> B;
+
+    B --> C;
+
+    C --> D;
+
+    C --> E;
+
+    C --> F;
+
+    C --> G;
+
+
+
+    D -- Writes to --> I;
+
+    E -- Reads from --> I;
+
+    E -- uses --> H;
+
+    F -- Manages --> I;
+
+    G -- Sends query to --> J;
+
 ```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-# BP_measure
-# BP_measure
-# BP_measure
