@@ -22,78 +22,154 @@ Built with React Native and the Expo framework, this application is written in T
 
 ## System Diagram
 
+
+
 ```mermaid
 
-graph TD
+
+
+flowchart TD
+
+
 
     subgraph "User"
 
+
+
         A[Mobile User]
 
+
+
     end
+
+
+
+
 
 
 
     subgraph "React Native App (Expo)"
 
+
+
         B(Expo Router)
+
+
 
         C(Tab Navigator)
 
+
+
         
+
+
 
         subgraph "Screens"
 
+
+
             D[Record Data]
+
+
 
             E[View Graph]
 
+
+
             F[Family Code]
+
+
 
             G[Ask AI]
 
+
+
         end
+
+
 
         
 
+
+
         H[Chart Kit]
 
+
+
     end
+
+
+
+
 
 
 
     subgraph "Backend"
 
+
+
         I[(Firebase RTDB)]
 
+
+
         J[(AI Service)]
+
+
 
     end
 
 
 
+
+
+
+
     A --> B;
+
+
 
     B --> C;
 
+
+
     C --> D;
+
+
 
     C --> E;
 
+
+
     C --> F;
+
+
 
     C --> G;
 
 
 
+
+
+
+
     D -- Writes to --> I;
+
+
 
     E -- Reads from --> I;
 
+
+
     E -- uses --> H;
+
+
 
     F -- Manages --> I;
 
+
+
     G -- Sends query to --> J;
+
+
 
 ```
